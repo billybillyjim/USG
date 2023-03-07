@@ -14,6 +14,7 @@ public class DrawManager : MonoBehaviour
     public CircleGenerator circleGen;
     public float minPointDistance = 1;
     public float closeCircleDistance = 4;
+    public bool draw;
 
     // Start is called before the first frame update
     void Start()
@@ -25,56 +26,61 @@ public class DrawManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began || Input.GetMouseButtonDown(0))
-        {        
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            float distance;
-            if(plane.Raycast(ray, out distance))
-            {
-                startPos = ray.GetPoint(distance);
-            }
-
-            lastPos = startPos;
-            circleGen.GenerateCircle(startPos);
-
-
-        }
-        else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetMouseButton(0))
+        if (draw)
         {
+            if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Began || Input.GetMouseButtonDown(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                float distance;
+                if (plane.Raycast(ray, out distance))
+                {
+                    startPos = ray.GetPoint(distance);
+                }
 
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            float distance;
-            if (plane.Raycast(ray, out distance))
-            {
-                var newPos = ray.GetPoint(distance);
-                if(Vector3.Distance(newPos, lastPos) > minPointDistance) {
-                    circleGen.GenerateLineSegment(lastPos, newPos);
-                    lastPos = newPos;
-                }
-                
-            }
-            
-        }
-        else if (Input.GetMouseButtonUp(0))
-        {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            float distance;
-            if (plane.Raycast(ray, out distance))
-            {
-                var newPos = ray.GetPoint(distance);
-                if (Vector3.Distance(newPos, lastPos) > minPointDistance)
-                {
-                    circleGen.GenerateCircle(newPos);
-                    lastPos = newPos;
-                }
-                if(Vector3.Distance(startPos, newPos) < closeCircleDistance)
-                {
-                    circleGen.GenerateLineSegment(newPos, startPos);
-                }
-                
+                lastPos = startPos;
+                circleGen.GenerateCircle(startPos);
+
 
             }
+            else if (Input.touchCount > 0 && Input.GetTouch(0).phase == TouchPhase.Moved || Input.GetMouseButton(0))
+            {
+
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                float distance;
+                if (plane.Raycast(ray, out distance))
+                {
+                    var newPos = ray.GetPoint(distance);
+                    if (Vector3.Distance(newPos, lastPos) > minPointDistance)
+                    {
+                        circleGen.GenerateLineSegment(lastPos, newPos);
+                        lastPos = newPos;
+                    }
+
+                }
+
+            }
+            else if (Input.GetMouseButtonUp(0))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                float distance;
+                if (plane.Raycast(ray, out distance))
+                {
+                    var newPos = ray.GetPoint(distance);
+                    if (Vector3.Distance(newPos, lastPos) > minPointDistance)
+                    {
+                        circleGen.GenerateCircle(newPos);
+                        lastPos = newPos;
+                    }
+                    if (Vector3.Distance(startPos, newPos) < closeCircleDistance)
+                    {
+                        circleGen.GenerateLineSegment(newPos, startPos);
+                    }
+
+
+                }
+            }
         }
+        
 
     }
 }
